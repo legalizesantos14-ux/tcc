@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlanetHero App</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================
+    ESTILO DO CONTAINER DO CELULAR (MELHORIA)
+=========================== */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #333;
+    font-family: 'Roboto', sans-serif;
+}
+
+.phone-container {
+    width: 375px; 
+    height: 667px; 
+    border: 12px solid black;
+    border-radius: 40px; 
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.9);
+    background-color: white; 
+    position: relative;
+    overflow: hidden;
+    padding: 3px; 
+    box-sizing: content-box;
+    background: #000;
+}
+
+.screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+    background-color: var(--green-light); 
+    overflow: hidden;
+    position: relative;
+}
+
+.notch { 
+    width: 130px;
+    height: 25px;
+    background: black;
+    border-radius: 0 0 15px 15px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+}
+
+/* ===========================
+    ESTILOS DO APLICATIVO
+=========================== */
+:root {
+    --green-dark: #38761D; 
+    --green-light: #E6FFE6; 
+    --text-dark: #2A2A2A;
+    --text-green: #38761D;
+    --card-bg: #FFFFFF;
+    --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    --icon-size: 24px;
+}
+
+/* Base das páginas */
+.page {
+    display: none;
+    width: 100%;
+    height: 100%; 
+    overflow-y: auto;
+    padding-bottom: 10px; 
+    background-color: var(--green-light);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.page.has-navbar {
+    height: calc(100% - 60px); /* Altura da tela menos a navbar */
+    padding-bottom: 10px; 
+}
+
+.page.active {
+    display: block;
+}
+
+/* Cabeçalho */
+.header {
+    background-color: var(--green-dark);
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.header-back {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: normal;
+}
+
+/* Cards de Conteúdo (Geral) */
+.card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px;
+    box-shadow: var(--card-shadow);
+    line-height: 1.4;
+}
+
+.section-title {
+    color: var(--text-dark); 
+    font-weight: bold;
+    font-size: 18px;
+    margin: 15px;
+    margin-bottom: 0px;
+}
+
+/* Checklist e Desafios */
+.home-card-desafio {
+    padding: 15px;
+    font-size: 14px;
+    color: var(--text-dark);
+}
+.home-card-desafio p {
+    margin: 5px 0;
+}
+
+.checklist-card {
+    padding-top: 5px;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    cursor: pointer;
+}
+
+.checklist-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+}
+
+.checklist-item label {
+    flex-grow: 1;
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+.checklist-item img {
+    /* Ajuste para ícones do checklist */
+    width: 22px; 
+    height: 22px;
+    margin-right: 10px;
+    filter: invert(36%) sepia(35%) saturate(1450%) hue-rotate(95deg) brightness(50%) contrast(100%); /* Cor verde para os ícones */
+}
+
+/* Botão de Envio */
+.submit-btn {
+    background-color: var(--green-dark);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    width: calc(100% - 30px);
+    margin: 15px;
+    cursor: pointer;
+}
+
+/* Conteúdos Educativos */
+.educational-content-card {
+    text-align: center;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-green);
+    padding: 25px 15px;
+}
+
+/* Estilo para a página de Conteúdos */
+.content-card-detail {
+    padding: 15px;
+}
+.content-card-detail h3 {
+    color: var(--text-green);
+    margin: 0;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+.content-card-detail h3 img {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    /* Filtrar ícones para verde (se não forem SVGs) */
+    filter: invert(36%) sepia(35%) saturate(1450%) hue-rotate(95deg) brightness(50%) contrast(100%);
+}
+.content-card-detail p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+
+/* ===========================
+    NAVBAR
+=========================== */
+.navbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: var(--card-bg);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    border-top: 1px solid #eee;
+    z-index: 20; 
+}
+
+.nav-item {
+    text-align: center;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.nav-item img {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    /* Cor padrão da navbar (Cinza/Preto) */
+    filter: grayscale(100%);
+}
+
+.nav-item.active img {
+    /* Cor ativa (verde escuro) */
+    filter: invert(36%) sepia(35%) saturate(1450%) hue-rotate(95deg) brightness(50%) contrast(100%);
+}
+
+/* Perfil */
+.profile-info {
+    text-align: center;
+    padding-top: 20px;
+}
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    content: url('https://cdn-icons-png.flaticon.com/512/456/456212.png');
+    filter: invert(36%) sepia(35%) saturate(1450%) hue-rotate(95deg) brightness(50%) contrast(100%); /* Avatar verde */
+}
+.profile-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+.profile-email {
+    color: gray;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* Conquista (Ajustes de Imagem) */
+.achievement-level {text-align: center;padding-top: 20px;}
+.medal-icon {
+    /* AJUSTE: Diminuição do ícone da medalha */
+    width: 50px; 
+    height: 50px;
+    margin: 10px auto;
+    content: url('https://cdn-icons-png.flaticon.com/512/3135/3135702.png');
+    filter: hue-rotate(90deg) saturate(150%);
+}
+
+.achievement-button {background-color: var(--card-bg);border: none;text-align: left;color: var(--text-dark);padding: 15px;width: calc(100% - 30px);display: flex;align-items: center;border-radius: 10px;box-shadow: var(--card-shadow);margin: 15px auto;cursor: pointer;}
+
+.achievement-button img {
+    /* AJUSTE: Diminuição dos ícones dos botões na conquista */
+    width: 30px; 
+    height: 30px;
+    margin-right: 15px;
+    filter: invert(36%) sepia(35%) saturate(1450%) hue-rotate(95deg) brightness(50%) contrast(100%);
+}
+
+.progress-fill {
+    background-color: var(--green-dark) !important; 
+}
+
+
+/* Outros estilos mantidos */
+.points-value {font-size: 28px;font-weight: bold;color: var(--text-dark);margin-bottom: 10px;}
+.points-progress-bar {background-color: #ddd;height: 8px;border-radius: 4px;margin: 0 auto 5px;width: 80%;}
+.next-level-text {font-size: 14px;color: gray;margin-bottom: 20px;}
+
+.summary-item {display: flex;justify-content: space-between;padding: 10px 0;font-size: 16px;}
+.feedback-button {background-color: var(--card-bg);border: none;text-align: left;color: var(--text-dark);padding: 15px;width: 100%;display: flex;justify-content: space-between;align-items: center;border-radius: 10px;box-shadow: var(--card-shadow);margin-top: 20px;cursor: pointer;}
+
+/* Estilos Login/Cadastro */
+.auth-page {display: flex;flex-direction: column;align-items: center;justify-content: center;height: 100%;text-align: center;padding: 0 30px;box-sizing: border-box;}
+.auth-logo {font-size: 24px;font-weight: bold;color: black;margin-bottom: 50px;}
+.auth-title {font-size: 20px;font-weight: bold;color: var(--green-dark);margin-bottom: 30px;}
+.auth-input-group {background-color: var(--card-bg);border-radius: 20px;padding: 15px;margin-bottom: 20px;width: 100%;display: flex;align-items: center;box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
+.auth-input-group input {border: none;outline: none;flex-grow: 1;font-size: 16px;padding: 0 10px;color: var(--text-dark);}
+.auth-input-group img {width: 20px;height: 20px;margin-right: 5px;filter: grayscale(100%);}
+.auth-link {font-size: 14px;margin-top: 20px;color: var(--text-green);cursor: pointer;}
+.auth-btn {background-color: var(--green-dark);color: white;border: none;padding: 12px 30px;border-radius: 10px;font-weight: bold;margin-top: 10px;cursor: pointer;box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
+.auth-error {color: red;font-size: 14px;margin-bottom: 15px;display: none;}
+
+</style>
+</head>
+<body>
+
+<div class="phone-container">
+    <div class="screen">
+        <div class="notch"></div>
+
+        <div id="login" class="page active auth-page">
+            <div class="auth-logo">PLANETHERO</div>
+            <div class="auth-title">LOGIN</div>
+
+            <p id="login-error" class="auth-error">Email ou senha inválidos.</p>
+
+            <div class="auth-input-group">
+                <img src="https://cdn-icons-png.flaticon.com/512/456/456212.png" alt="Usuário">
+                <input type="text" id="login-email-username" placeholder="email ou nome de usuário:">
+            </div>
+
+            <div class="auth-input-group">
+                <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" alt="Senha">
+                <input type="password" id="login-senha" placeholder="senha">
+            </div>
+
+            <button class="auth-btn" onclick="handleLogin()">ENTRAR</button>
+
+            <p class="auth-link" onclick="go('cadastro')">criar uma conta? **click aqui**</p>
+        </div>
+
+        <div id="cadastro" class="page auth-page">
+            <div class="auth-logo">PLANETHERO</div>
+            <div class="auth-title">CADASTRO</div>
+
+            <p id="cadastro-error" class="auth-error">Por favor, preencha todos os campos.</p>
+
+            <div class="auth-input-group">
+                <img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="Email">
+                <input type="email" id="cadastro-email" placeholder="email :">
+            </div>
+
+            <div class="auth-input-group">
+                <img src="https://cdn-icons-png.flaticon.com/512/456/456212.png" alt="Usuário">
+                <input type="text" id="cadastro-nome" placeholder="nome de usuário:">
+            </div>
+
+            <div class="auth-input-group">
+                <img src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png" alt="Senha">
+                <input type="password" id="cadastro-senha" placeholder="senha">
+            </div>
+
+            <button class="auth-btn" onclick="handleCadastro()">CADASTRAR</button>
+            <p class="auth-link" onclick="go('login')">Já tem uma conta? **Voltar para o Login**</p>
+        </div>
+
+
+        <div id="home" class="page has-navbar">
+            <div class="header">PLANETHERO</div>
+            
+            <h3 class="section-title">Desafios Semanais:</h3>
+            <div class="card home-card-desafio">
+                <p>Participe de uma ação ambiental</p>
+                <p>Evite o consumo desnecessário</p>
+                <p>Adote um hábito ecológico</p>
+            </div>
+
+            <h3 class="section-title">Desafios Diários:</h3>
+            <div class="card home-card-desafio">
+                <p>use transporte público</p>
+                <p>economize energia</p>
+                <p>reduza o consumo de plastico</p>
+            </div>
+            
+            <h3 class="section-title">Checklist semanal:</h3>
+            <div class="card checklist-card">
+                <div id="checklist-container">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="task1" class="task" data-points="100">
+                        <img src="https://cdn-icons-png.flaticon.com/512/868/868434.png" alt="Icone Ação Ambiental">
+                        <label for="task1">Participe de uma ação ambiental (100 pts)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="task2" class="task" data-points="50">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2854/2854376.png" alt="Icone Consumo Consciente">
+                        <label for="task2">Evite o consumo desnecessário (50 pts)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="task3" class="task" data-points="75">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1218/1218290.png" alt="Icone Hábito Ecológico">
+                        <label for="task3">Adote um hábito ecológico (75 pts)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="task4" class="task" data-points="20">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2967/2967657.png" alt="Icone Transporte Público">
+                        <label for="task4">Usar Transporte Público Diário (20 pts)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="task5" class="task" data-points="15">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2622/2622416.png" alt="Icone Economizar Energia">
+                        <label for="task5">Economizar Energia Diária (15 pts)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="task6" class="task" data-points="30">
+                        <img src="https://cdn-icons-png.flaticon.com/512/7504/7504068.png" alt="Icone Reduzir Plástico">
+                        <label for="task6">Reduzir Consumo de Plástico Diário (30 pts)</label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="submit-btn" onclick="enviarChecklist()">ENVIAR CHECKLIST</button>
+            <div class="card" id="score-feedback" style="display:none; text-align:center; font-weight:bold;"></div>
+
+            <div class="card educational-content-card" onclick="go('conteudos-educativos')">
+                Conteúdos educativos diarios
+            </div>
+        </div>
+
+        <div id="conteudos-educativos" class="page has-navbar">
+            <div class="header"><a href="#" class="header-back" onclick="go('home')">←</a> Conteúdos educativos diários</div>
+
+            <div class="card content-card-detail">
+                <h3><img src="https://cdn-icons-png.flaticon.com/512/3208/3208945.png" alt="Icone Mudanças Climáticas"> MUDANÇAS CLIMATICAS</h3>
+                <p>O que são? Alterações no clima devido à poluição.</p>
+                <p>Exemplo: Menos carro, mais bicicleta = Menos poluição!</p>
+            </div>
+            
+            <div class="card content-card-detail">
+                <h3><img src="https://cdn-icons-png.flaticon.com/512/2854/2854376.png" alt="Icone Consumo Consciente"> CONSUMO CONSCIENTE</h3>
+                <p>O que é? Comprar o necessário e evitar excesso</p>
+                <p>Exemplo: Evite plásticos! Use sacolas reutilizáveis</p>
+            </div>
+
+            <div class="card content-card-detail">
+                <h3><img src="https://cdn-icons-png.flaticon.com/512/3440/3440073.png" alt="Icone Reciclagem"> RECICLAGEM</h3>
+                <p>O que é? Separar lixo para reutilizar.</p>
+                <p>Exemplo: Reciclar 1 lata de alumínio economiza 95% de energia</p>
+            </div>
+        </div>
+        
+        <div id="conquista" class="page has-navbar">
+            <div class="header">CONQUISTA</div>
+
+            <div class="achievement-level">
+                <h2>Nível <span id="current-level">3</span></h2>
+                <div class="medal-icon"></div>
+                <p class="points-value" id="current-points">1.500 pontos</p>
+                <div class="points-progress-bar"><div class="progress-fill" style="width: 75%;"></div></div>
+                <p class="next-level-text"><span id="points-to-next-level">500</span> pontos para o Nível <span id="next-level">4</span></p>
+            </div>
+            
+            <button class="achievement-button" onclick="go('medalhas-detalhe')">
+                <img src="https://cdn-icons-png.flaticon.com/512/3490/3490213.png" alt="Icone Medalhas">
+                medalhas
+            </button>
+
+            <button class="achievement-button" onclick="go('ranking-detalhe')">
+                <img src="https://cdn-icons-png.flaticon.com/512/3212/3212261.png" alt="Icone Ranking">
+                rankings
+            </button>
+        </div>
+
+        <div id="perfil" class="page has-navbar">
+            <div class="header">PERFIL</div>
+
+            <div class="profile-info">
+                <div class="profile-avatar"></div>
+                <p class="profile-name" id="profile-name">Nome do Usuário</p>
+                <p class="profile-email" id="profile-email">email@exemplo.com</p>
+            </div>
+
+            <div class="card">
+                <h3 style="color: var(--text-dark);">Resumo</h3>
+                <div class="summary-item">
+                    <span>Medalhas</span>
+                    <span>2</span>
+                </div>
+                <div class="summary-item">
+                    <span>Ranking</span>
+                    <span>5º</span>
+                </div>
+            </div>
+            
+            <button class="feedback-button" onclick="go('feedback')">
+                feedback e sugestões
+                <span style="font-size: 20px;">></span>
+            </button>
+
+            <button class="submit-btn" style="background-color: #CC0000; margin-top: 20px;" onclick="handleLogout()">SAIR</button>
+        </div>
+
+        <div id="ranking-detalhe" class="page has-navbar">
+            <div class="header"><a href="#" class="header-back" onclick="go('conquista')">←</a> Ranking</div>
+            <h3 class="section-title">Dezembro - 2025</h3>
+            <div class="card" style="display:flex; align-items:center;">
+                <img src="https://cdn-icons-png.flaticon.com/512/147/147142.png" style="width:40px; height:40px; margin-right:10px; border-radius:50%;">
+                1º Melisa 2500 pontos
+            </div>
+            <div class="card" style="display:flex; align-items:center;">
+                <img src="https://cdn-icons-png.flaticon.com/512/147/147144.png" style="width:40px; height:40px; margin-right:10px; border-radius:50%;">
+                2º Pedro 2300 pontos
+            </div>
+            <div class="card" style="display:flex; align-items:center;">
+                <img src="https://cdn-icons-png.flaticon.com/512/147/147138.png" style="width:40px; height:40px; margin-right:10px; border-radius:50%;">
+                3º Rafaela 2000 pontos
+            </div>
+        </div>
+
+        <div id="medalhas-detalhe" class="page has-navbar">
+            <div class="header"><a href="#" class="header-back" onclick="go('conquista')">←</a> MEDALHAS</div>
+            <div class="card" style="display:flex; align-items:center;">
+                <img src="https://cdn-icons-png.flaticon.com/512/3490/3490213.png" style="width:40px; height:40px; margin-right:10px; filter: invert(36%) sepia(35%) saturate(1450%) hue-rotate(95deg) brightness(50%) contrast(100%);">
+                1 lugar em Outubro
+            </div>
+            <div class="card" style="display:flex; align-items:center;">
+                <img src="https://cdn-icons-png.flaticon.com/512/3490/3490213.png" style="width:40px; height:40px; margin-right:10px; filter: hue-rotate(300deg) brightness(80%);">
+                3 lugar em Novembro
+            </div>
+        </div>
+
+        <div id="feedback" class="page has-navbar">
+            <div class="header"><a href="#" class="header-back" onclick="go('perfil')">←</a> PERFIL</div>
+            <div class="profile-info" style="padding-top: 0;"><div class="profile-avatar"></div></div>
+
+            <div class="card">
+                <h3 style="color: var(--text-green); text-align:center;">feedback e sugestões</h3>
+                <textarea id="feedback-text" rows="5" style="width:100%; border:1px solid #ccc; border-radius:10px; padding:10px; box-sizing:border-box;" placeholder="digite seu feedback ou sugestões"></textarea>
+                <button class="submit-btn" style="width:100%; margin: 10px 0 0 0;" onclick="sendFeedback()">enviar</button>
+            </div>
+
+            <div id="feedback-success" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background-color:white; padding:30px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.3); text-align:center; z-index: 50;">
+                <p style="color: var(--text-green); font-weight:bold;">Obrigado pelo feedback, agradecemos pela sua colaboração</p>
+                <button class="submit-btn" style="width:100px; margin-top:10px;" onclick="closeFeedbackSuccess()">ok</button>
+            </div>
+        </div>
+
+        <div class="navbar">
+            <div class="nav-item active" data-page="home" onclick="go('home', this)">
+                <img src="https://cdn-icons-png.flaticon.com/512/750/750512.png" alt="Home">
+            </div>
+            <div class="nav-item" data-page="conquista" onclick="go('conquista', this)">
+                <img src="https://cdn-icons-png.flaticon.com/512/126/126488.png" alt="Conquista">
+            </div>
+            <div class="nav-item" data-page="perfil" onclick="go('perfil', this)">
+                <img src="https://cdn-icons-png.flaticon.com/512/456/456212.png" alt="Perfil">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentScore = parseInt(localStorage.getItem('userScore')) || 1500;
+    const LEVELS = [
+        { level: 1, minPoints: 0, maxPoints: 500 },
+        { level: 2, minPoints: 501, maxPoints: 1000 },
+        { level: 3, minPoints: 1001, maxPoints: 2000 },
+        { level: 4, minPoints: 2001, maxPoints: 3500 },
+    ];
+    let USER_DATA = JSON.parse(localStorage.getItem('planetHeroUser')) || null;
+    let LOGGED_IN = !!USER_DATA;
+
+    // Função principal de navegação
+    function go(pageId, navItem = null) {
+        if (!LOGGED_IN && pageId !== 'login' && pageId !== 'cadastro') {
+            pageId = 'login';
+        }
+
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        
+        const targetPage = document.getElementById(pageId);
+        if (targetPage) {
+            targetPage.classList.add("active");
+            targetPage.scrollTop = 0;
+        }
+
+        // Se for uma página do aplicativo, exibe a navbar
+        const isAppPage = targetPage && targetPage.classList.contains('has-navbar');
+        document.querySelector('.navbar').style.display = isAppPage ? 'flex' : 'none';
+
+        if (pageId === 'perfil') {
+            updateProfileDisplay();
+        }
+        if (pageId === 'conquista') {
+            updateScoreDisplay();
+        }
+
+        // Atualiza o estado ativo da Navbar
+        document.querySelectorAll(".nav-item").forEach(item => {
+            item.classList.remove("active");
+        });
+        
+        // Ativa o ícone na navbar se estiver navegando para uma página principal
+        if (navItem) {
+            navItem.classList.add("active");
+        } else if (isAppPage) {
+            // Tenta achar o item da navbar correspondente
+            const navItems = document.querySelectorAll(".nav-item");
+            navItems.forEach(item => {
+                if (item.dataset.page === pageId || getParentPageId(pageId) === item.dataset.page) {
+                    item.classList.add('active');
+                }
+            });
+        }
+    }
+
+    function getParentPageId(pageId) {
+        if (['ranking-detalhe', 'medalhas-detalhe'].includes(pageId)) return 'conquista';
+        if (pageId === 'feedback') return 'perfil';
+        if (pageId === 'conteudos-educativos') return 'home';
+        return pageId;
+    }
+
+
+    // ===========================
+    // LÓGICA DE LOGIN/CADASTRO
+    // ===========================
+
+    function handleCadastro() {
+        const email = document.getElementById('cadastro-email').value.trim();
+        const nome = document.getElementById('cadastro-nome').value.trim();
+        const senha = document.getElementById('cadastro-senha').value;
+        const errorBox = document.getElementById('cadastro-error');
+        errorBox.style.display = 'none';
+
+        if (!email || !nome || !senha) {
+            errorBox.textContent = "Por favor, preencha todos os campos.";
+            errorBox.style.display = 'block';
+            return;
+        }
+        
+        // Simulação de salvar o usuário
+        const userData = { email, nome, senha, score: 0 };
+        localStorage.setItem('planetHeroUser', JSON.stringify(userData));
+        localStorage.setItem('userScore', 0); // Inicializa o score
+        USER_DATA = userData;
+        LOGGED_IN = true;
+        currentScore = 0;
+
+        alert(`Cadastro realizado com sucesso, ${nome}!`);
+        go('home', document.querySelector('.nav-item[data-page="home"]'));
+    }
+
+    function handleLogin() {
+        const input = document.getElementById('login-email-username').value.trim();
+        const senha = document.getElementById('login-senha').value;
+        const errorBox = document.getElementById('login-error');
+        errorBox.style.display = 'none';
+
+        if (!input || !senha) {
+            errorBox.textContent = "Por favor, preencha todos os campos.";
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        const storedData = JSON.parse(localStorage.getItem('planetHeroUser'));
+
+        if (!storedData) {
+            errorBox.textContent = "Nenhum usuário cadastrado. Crie uma conta primeiro.";
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        // Checa se o input corresponde ao email OU nome de usuário E a senha
+        if ((input === storedData.email || input === storedData.nome) && senha === storedData.senha) {
+            USER_DATA = storedData;
+            LOGGED_IN = true;
+            // Carrega o score salvo (ou 0 se não tiver)
+            currentScore = parseInt(localStorage.getItem('userScore')) || 0; 
+            document.getElementById('login-email-username').value = '';
+            document.getElementById('login-senha').value = '';
+            go('home', document.querySelector('.nav-item[data-page="home"]'));
+        } else {
+            errorBox.textContent = "Email/Usuário ou senha inválidos.";
+            errorBox.style.display = 'block';
+        }
+    }
+
+    function handleLogout() {
+        LOGGED_IN = false;
+        USER_DATA = null;
+        // Não removemos o user data do localStorage para que ele possa logar novamente
+        go('login');
+    }
+
+    function updateProfileDisplay() {
+        if (USER_DATA) {
+            document.getElementById('profile-name').textContent = USER_DATA.nome;
+            document.getElementById('profile-email').textContent = USER_DATA.email;
+        }
+    }
+
+
+    // ===========================
+    // LÓGICA DO CHECKLIST/SCORE
+    // ===========================
+    function getLevelInfo(score) {
+        for (const level of LEVELS) {
+            if (score <= level.maxPoints) {
+                return level;
+            }
+        }
+        return LEVELS[LEVELS.length - 1]; // Retorna o último nível se passar do máximo
+    }
+
+    function enviarChecklist() {
+        let tasks = document.querySelectorAll("#checklist-container .task:checked");
+        let totalPoints = 0;
+
+        tasks.forEach(t => {
+            totalPoints += parseInt(t.dataset.points) || 0;
+            // Desmarca a caixa APÓS a leitura
+            t.checked = false; 
+        });
+
+        currentScore += totalPoints;
+        localStorage.setItem('userScore', currentScore);
+        updateScoreDisplay(); // Atualiza o display imediatamente
+
+        let feedbackBox = document.getElementById("score-feedback");
+        feedbackBox.style.display = "block";
+
+        if (totalPoints > 0) {
+            feedbackBox.innerHTML = `🥳 **Parabéns!** Você ganhou **${totalPoints} pontos**!`;
+        } else {
+            feedbackBox.innerHTML = `Nenhuma tarefa concluída. Marque as caixas para ganhar pontos!`;
+        }
+        
+        setTimeout(() => {
+            feedbackBox.style.display = "none";
+        }, 5000);
+    }
+
+    function updateScoreDisplay() {
+        const currentLevelInfo = getLevelInfo(currentScore);
+        const nextLevelInfo = LEVELS.find(l => l.level === currentLevelInfo.level + 1);
+
+        document.getElementById('current-points').textContent = currentScore.toLocaleString('pt-BR') + ' pontos';
+        document.getElementById('current-level').textContent = currentLevelInfo.level;
+        
+        let percentage = 100; // Padrão para o nível máximo
+        let nextLevelText = "Parabéns! Você alcançou o nível máximo.";
+        
+        if (nextLevelInfo) {
+            const pointsInCurrentLevel = currentScore - currentLevelInfo.minPoints;
+            const pointsToNextLevel = nextLevelInfo.minPoints - currentLevelInfo.minPoints;
+            percentage = (pointsInCurrentLevel / pointsToNextLevel) * 100;
+            
+            const pointsRemaining = nextLevelInfo.minPoints - currentScore;
+
+            document.getElementById('points-to-next-level').textContent = pointsRemaining.toLocaleString('pt-BR');
+            document.getElementById('next-level').textContent = nextLevelInfo.level;
+            nextLevelText = `${pointsRemaining.toLocaleString('pt-BR')} pontos para o Nível ${nextLevelInfo.level}`;
+        }
+        
+        document.querySelector('.next-level-text').textContent = nextLevelText;
+        
+        const progressFill = document.querySelector('#conquista .progress-fill');
+        if(progressFill) {
+            progressFill.style.width = Math.max(0, Math.min(100, percentage)) + '%';
+        }
+    }
+
+    function sendFeedback() {
+        const feedbackText = document.getElementById('feedback-text').value;
+        if (feedbackText.trim() !== "") {
+            document.getElementById('feedback-success').style.display = 'block';
+            document.getElementById('feedback-text').value = '';
+        } else {
+            alert("Por favor, digite seu feedback ou sugestão.");
+        }
+    }
+
+    function closeFeedbackSuccess() {
+        document.getElementById('feedback-success').style.display = 'none';
+        go('perfil');
+    }
+
+    // Inicializa a aplicação
+    document.addEventListener('DOMContentLoaded', () => {
+        // Se já tiver dados de usuário no localStorage, consideramos logado.
+        if (localStorage.getItem('planetHeroUser')) {
+            LOGGED_IN = true;
+            USER_DATA = JSON.parse(localStorage.getItem('planetHeroUser'));
+            go('home', document.querySelector('.nav-item[data-page="home"]'));
+        } else {
+            // Caso contrário, vai para a tela de login
+            go('login');
+        }
+    });
+</script>
+
+</body>
+</html>
